@@ -1,21 +1,33 @@
 // js/config.js
 
-// Hapus import.meta.env... ganti dengan string langsung
+// 1. Mengambil data dari window (yang diisi oleh Vercel di index.html)
+const SUPABASE_URL = window.env?.SUPABASE_URL || "";
+const SUPABASE_KEY = window.env?.SUPABASE_KEY || "";
+
+// 2. Validasi sederhana
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+    console.error("ERROR: Environment Variables Vercel tidak terbaca!");
+    console.log("Cek: 1. Apakah sudah set di Vercel Settings? 2. Apakah sudah Redeploy?");
+}
+
 export const SupabaseConfig = {
-    // URL dari Project Settings -> API di Supabase
-    URL: "https://xyz.supabase.co", 
-    
-    // Key dari Project Settings -> API -> anon / public key (BUKAN service_role)
-    KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ey..." 
+    URL: SUPABASE_URL,
+    KEY: SUPABASE_KEY
 };
 
 export const PiConfig = {
     version: "2.0",
-    sandbox: true // Pastikan true jika Tesnet
+    sandbox: true 
 };
 
 export const Tables = {
     PROFILES: "profiles",
     PRODUCTS: "products",
-    // ... tabel lainnya
+    FEATURED_PRODUCTS: "featured_products",
+    ORDER: "order",
+    ORDER_ITEM: "order_item",
+    PAYMENT: "payment",
+    SHIPPING: "shipping",
+    REVIEWS: "reviews",
+    WALLET_ADDRESS: "wallet_addres"
 };
