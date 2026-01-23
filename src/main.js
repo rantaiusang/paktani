@@ -1,14 +1,16 @@
-import { initPiSDK, autoInsertProfile } from './config.js'
+window.onload = async () => {
+  const user = await initPiSDK();
+  if (!user) return;
 
-// Inisialisasi Pi SDK
-initPiSDK()
+  document.getElementById("welcome").innerText =
+    "Welcome " + user.username;
 
-// Ambil piUID setelah login
-const piUID = window.piUID
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("app").style.display = "block";
 
-// Auto-insert profile jika belum ada
-autoInsertProfile(piUID, {
-  name: 'Nama Petani',
-  phone: '08123456789',
-  location: 'Desa Contoh'
-})
+  autoInsertProfile(window.piUID, {
+    name: "Nama Petani",
+    phone: "08123456789",
+    location: "Desa Contoh"
+  });
+};
