@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pak Tani - Full Version</title>
+    <title>Pak Tani Full Fix</title>
+    
     <!-- Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -27,9 +28,8 @@
         img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
     </style>
 
-    <!-- SCRIPT INJEKSI VERCEL (PENTING!) -->
+    <!-- SCRIPT INJEKSI VERCEL (PASTIKAN TIDAK ADA SPASI TAMBAHAN) -->
     <script>
-        // Vercel akan mengganti tulisan di dalam %...% dengan API Key asli Anda saat deploy
         window.env = {
             SUPABASE_URL: "%VITE_SUPABASE_URL%",
             SUPABASE_KEY: "%VITE_SUPABASE_ANON_KEY%"
@@ -60,18 +60,20 @@
         <div id="products" class="grid hidden"></div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC (Langsung disini biar gampang) -->
+    <!-- JAVASCRIPT LOGIC (DIPERBAIKI KURUNG DAN TAG-NYA) -->
     <script>
         // 1. SETUP KONEKSI SUPABASE DARI VERCEL
         const supabaseUrl = window.env?.SUPABASE_URL;
         const supabaseKey = window.env?.SUPABASE_KEY;
 
+        // Cek Error Konfigurasi
         if (!supabaseUrl || !supabaseKey) {
-            alert("ERROR: API Key Vercel tidak terbaca! Pastikan sudah Redeploy.");
-            document.getElementById('loading').innerText = "Error Konfigurasi. Cek Console.";
+            console.error("ERROR: API Key Vercel tidak terbaca.");
+            alert("Error: API Key tidak terbaca. Pastikan sudah Redeploy di Vercel.");
+        } else {
+            // Inisialisasi Supabase
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         }
-
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         // 2. STATE
         let currentUser = null;
@@ -89,7 +91,7 @@
             });
         }
 
-        // 4. FUNGSI UTAMA
+        // 4. FUNGSI UTAMA SAAT HALAMAN SIAP
         document.addEventListener('DOMContentLoaded', async () => {
             await loadPiSDK();
 
@@ -102,7 +104,7 @@
                 updateUI(false);
             }
 
-            // Ambil Produk
+            // Panggil fungsi ambil produk
             fetchProducts();
         });
 
@@ -138,7 +140,7 @@
 
             } catch (err) {
                 console.error(err);
-                loading.innerText = "Gagal memuat produk. Cek Console.";
+                loading.innerText = "Gagal memuat produk. Cek Console (F12).";
             }
         }
 
@@ -151,6 +153,7 @@
                 updateUI(true);
                 alert("Login Berhasil!");
             } catch (err) {
+                console.error(err);
                 alert("Login Gagal");
             }
         }
@@ -176,4 +179,4 @@
         }
     </script>
 </body>
-</html>
+</html
