@@ -3,22 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pak Tani - Marketplace Tani Modern</title>
+    <title>Pak Tani - Multi Role</title>
     
-    <!-- Font Google -->
+    <!-- Font & Icon -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- VARIABLES & RESET --- */
+        /* --- CSS VARIABLES --- */
         :root {
-            --primary: #166534;   /* Hijau Tua */
-            --accent: #facc15;    /* Kuning Emas */
-            --light: #f0fdf4;     /* Hijau Sangat Muda */
+            --primary: #166534;
+            --accent: #facc15;
+            --light: #f0fdf4;
             --dark: #1f2937;
             --white: #ffffff;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -26,74 +24,58 @@
 
         /* --- NAVBAR --- */
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 5%;
-            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         .brand { font-weight: 800; font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; gap: 10px; }
         .brand i { color: var(--accent); }
         
-        /* --- HERO SECTION (BAGIAN BARU) --- */
+        /* --- HERO --- */
         .hero {
             background: linear-gradient(rgba(22, 101, 52, 0.9), rgba(22, 101, 52, 0.8)), url('https://images.unsplash.com/photo-1625246333195-0801963d87bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 80px 20px;
-            text-align: center;
-            border-bottom-right-radius: 50px;
-            border-bottom-left-radius: 50px;
+            background-size: cover; background-position: center; color: white;
+            padding: 80px 20px; text-align: center; border-bottom-right-radius: 50px; border-bottom-left-radius: 50px;
         }
         .hero h1 { font-size: 2.5rem; margin-bottom: 15px; }
         .hero p { font-size: 1.1rem; margin-bottom: 30px; opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto; }
-        .hero-btn {
-            background: var(--accent); color: var(--dark); padding: 12px 30px;
-            border-radius: 50px; font-weight: bold; text-decoration: none;
-            box-shadow: 0 4px 15px rgba(250, 204, 21, 0.4);
-            transition: transform 0.2s;
-        }
-        .hero-btn:hover { transform: scale(1.05); }
-
-        /* --- CONTAINER --- */
+        
+        /* --- CONTAINER & GRID --- */
         .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
-
-        /* --- CARD PRODUCTS --- */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; }
         
-        .card {
-            background: var(--white); border-radius: 20px; overflow: hidden;
-            box-shadow: var(--shadow); transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
+        /* --- CARD --- */
+        .card { background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.05); }
         .card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        
         .card-img-wrapper { height: 200px; overflow: hidden; position: relative; }
         .card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .card:hover img { transform: scale(1.1); }
-        
         .card-body { padding: 20px; }
         .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
         .card-price { color: var(--primary); font-weight: 700; font-size: 1.3rem; margin-bottom: 10px; }
         .card-desc { font-size: 0.9rem; color: #666; margin-bottom: 20px; line-height: 1.4; }
         
+        /* --- BUTTONS --- */
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn { padding: 10px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
         .btn-buy { background: var(--primary); color: white; }
         .btn-cart { background: #fff3cd; color: var(--dark); border: 1px solid #fcd34d; }
+        .btn-pi { background: #7B2CBF; color: white; }
 
-        /* --- ADMIN PANEL --- */
+        /* --- ROLE SELECTOR & ADMIN --- */
+        .user-controls { display: flex; align-items: center; gap: 15px; }
+        .role-select { padding: 8px; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; background: white; font-size: 0.9rem; }
+        
         .admin-panel {
-            background: linear-gradient(to right, #ffffff, #f0fdf4);
-            padding: 20px; border-radius: 15px; margin-bottom: 40px;
-            border-left: 5px solid var(--accent); display: none;
+            background: linear-gradient(to right, #ffffff, #f0fdf4); padding: 20px; border-radius: 15px;
+            margin-bottom: 40px; border-left: 5px solid var(--accent); display: none; animation: slideDown 0.3s ease;
         }
-        .form-input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         .btn-upload { background: var(--accent); color: var(--dark); border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        /* --- BADGE --- */
-        .cart-badge { background: #ef4444; color: white; padding: 2px 8px; border-radius: 20px; font-size: 0.8rem; margin-left: 5px; }
+        .hidden { display: none; }
     </style>
 
     <!-- Supabase SDK -->
@@ -110,46 +92,55 @@
     <!-- NAVBAR -->
     <nav class="navbar">
         <div class="brand"><i class="fa-solid fa-leaf"></i> PAK TANI</div>
-        <div style="display:flex; align-items:center; gap:15px;">
-            <div style="font-weight:600;"><i class="fa-solid fa-basket-shopping"></i> <span id="cartCount">0</span></div>
-            <div id="authSection"><button class="btn-upload" id="btnLogin" style="background:var(--primary); color:white;">Login Pi</button></div>
+        
+        <div class="user-controls">
+            <!-- Badan Keranjang -->
+            <div style="font-weight:600; font-size:0.9rem;">
+                <i class="fa-solid fa-basket-shopping"></i> <span id="cartCount">0</span>
+            </div>
+
+            <!-- Area Login / User Info -->
+            <div id="authSection">
+                <button class="btn btn-pi" id="btnLogin">Login Pi</button>
+            </div>
         </div>
     </nav>
 
-    <!-- HERO SECTION -->
+    <!-- HERO -->
     <div class="hero">
-        <h1>Hasil Bumi Segar,<br>Dari Tani Untuk Anda</h1>
-        <p>Platform jual beli hasil pertanian terbaik, langsung dari petani lokal ke meja makan Anda. Aman, Mudah, dan Terpercaya.</p>
-        <a href="#catalog" class="hero-btn">Belanja Sekarang <i class="fa-solid fa-arrow-right"></i></a>
+        <h1>Pasar Digital Petani</h1>
+        <p>Jual hasil panenmu, atau beli kebutuhan dapur dengan mudah dan aman.</p>
     </div>
 
-    <!-- KONTEN UTAMA -->
-    <div class="container" id="catalog">
+    <!-- KONTEN -->
+    <div class="container">
         
-        <!-- ADMIN UPLOAD -->
+        <!-- PANEL ADMIN (Hanya Muncul di Mode Penjual) -->
         <div id="adminPanel" class="admin-panel">
-            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Upload Produk</h3>
+            <h3><i class="fa-solid fa-store"></i> Mode Penjual: Upload Produk</h3>
             <div id="uploadForm" style="margin-top:15px;">
-                <input type="text" id="pName" class="form-input" placeholder="Nama Produk (ex: Beras Rojolele)">
-                <input type="number" id="pPrice" class="form-input" placeholder="Harga (ex: 15000)">
+                <input type="text" id="pName" class="form-input" placeholder="Nama Produk">
+                <input type="number" id="pPrice" class="form-input" placeholder="Harga (Rp)">
                 <input type="text" id="pImg" class="form-input" placeholder="URL Gambar">
-                <textarea id="pDesc" class="form-input" rows="3" placeholder="Deskripsi Produk"></textarea>
-                <button class="btn-upload" onclick="saveProduct()">Simpan ke Database</button>
+                <textarea id="pDesc" class="form-input" rows="3" placeholder="Deskripsi"></textarea>
+                <button class="btn-upload" onclick="saveProduct()">Upload ke Pasar</button>
             </div>
         </div>
 
-        <h2 style="margin-bottom:25px; color:var(--primary);"><i class="fa-solid fa-fire"></i> Produk Terlaris</h2>
+        <h2 style="margin-bottom:25px; color:var(--primary);">Katalog Pasar</h2>
         
-        <div id="loading" style="text-align:center; padding:40px;">Memuat produk segar...</div>
+        <div id="loading" style="text-align:center; padding:40px;">Memuat pasar...</div>
         <div id="productGrid" class="grid"></div>
 
     </div>
 
-    <!-- SCRIPT LOGIC (SAMA SEPERTI SEBELUMNYA) -->
+    <!-- SCRIPT LOGIC -->
     <script>
         const supabase = window.supabase.createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_KEY);
-        let currentUser = null; let cart = [];
+        let currentUser = null;
+        let cart = [];
 
+        // 1. LOAD PI SDK
         function loadPiSDK() {
             return new Promise(resolve => {
                 if (window.Pi) { window.Pi.init({ version: "2.0", sandbox: true }); resolve(); return; }
@@ -160,6 +151,7 @@
             });
         }
 
+        // 2. INIT
         document.addEventListener('DOMContentLoaded', async () => {
             await loadPiSDK();
             const stored = localStorage.getItem('pak_tani_user');
@@ -172,19 +164,44 @@
             loadMarketplace();
         });
 
+        // 3. UPDATE UI BERDASARKAN LOGIN & ROLE
         function updateAuth(isLoggedIn) {
-            const sec = document.getElementById('authSection');
-            const panel = document.getElementById('adminPanel');
+            const authSection = document.getElementById('authSection');
+            const adminPanel = document.getElementById('adminPanel');
+
             if (isLoggedIn) {
-                sec.innerHTML = `<span style="font-weight:600;">Hi, ${currentUser.username}</span> <button onclick="logout()" style="border:none; background:#ddd; padding:5px 10px; border-radius:5px; margin-left:10px; cursor:pointer;">Keluar</button>`;
-                panel.style.display = 'block';
+                // Tampilkan Dropdown Role + Logout
+                authSection.innerHTML = `
+                    <select id="roleSelector" class="role-select" onchange="switchRole(this.value)">
+                        <option value="buyer">🛒 Mode Pembeli</option>
+                        <option value="seller">👨‍🌾 Mode Penjual</option>
+                    </select>
+                    <button class="btn" style="background:#555; color:white; padding:8px 15px;" onclick="logout()">Keluar</button>
+                `;
+                
+                // Default role: Buyer (Admin Panel Hidden)
+                adminPanel.style.display = 'none'; 
+
             } else {
-                sec.innerHTML = `<button class="btn-upload" id="btnLogin" style="background:var(--primary); color:white;">Login Pi</button>`;
-                panel.style.display = 'none';
+                // Tombol Login Saja
+                authSection.innerHTML = `<button class="btn btn-pi" id="btnLogin">Login Pi</button>`;
                 document.getElementById('btnLogin').onclick = login;
+                adminPanel.style.display = 'none';
             }
         }
 
+        // 4. SWITCH ROLE LOGIC
+        window.switchRole = function(role) {
+            const panel = document.getElementById('adminPanel');
+            if (role === 'seller') {
+                panel.style.display = 'block';
+                alert("Mode Penjual Aktif! Silakan upload produk.");
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        // 5. MARKETPLACE
         async function loadMarketplace() {
             const { data } = await supabase.from('products').select('*').order('id', { ascending: false });
             const container = document.getElementById('productGrid');
@@ -197,7 +214,7 @@
                     </div>
                     <div class="card-body">
                         <div class="card-title">${p.name}</div>
-                        <div class="card-desc">${p.description || 'Hasil pertanian berkualitas premium.'}</div>
+                        <div class="card-desc">${p.description || 'Produk segar dari kebun.'}</div>
                         <div class="card-price">Rp ${p.price}</div>
                         <div class="btn-group">
                             <button class="btn btn-buy" onclick="buyNow(${p.id})">Beli</button>
@@ -208,17 +225,22 @@
             `).join('');
         }
 
+        // 6. FUNGSI PENUNJANG
         function addToCart(id) { cart.push({id}); document.getElementById('cartCount').innerText = cart.length; }
         async function buyNow(id) { if(!currentUser) return alert("Login dulu!"); alert("Fitur pembayaran Pi segera hadir!"); }
+        
         async function saveProduct() {
             const name = document.getElementById('pName').value;
             const price = document.getElementById('pPrice').value;
             const img = document.getElementById('pImg').value;
             const desc = document.getElementById('pDesc').value;
             if(!name || !price) return alert("Isi nama & harga!");
+            
             const { error } = await supabase.from('products').insert([{name, price, image_url: img, description: desc, is_active: true}]);
-            if(!error) { alert("Sukses!"); document.getElementById('uploadForm').reset(); loadMarketplace(); } else alert("Gagal: "+error.message);
+            if(!error) { alert("Sukses Upload!"); document.getElementById('uploadForm').reset(); loadMarketplace(); } 
+            else alert("Gagal: "+error.message);
         }
+
         async function login() { try { const res = await window.Pi.authenticate(); currentUser = res.user; localStorage.setItem('pak_tani_user', JSON.stringify(currentUser)); updateAuth(true); } catch(e){alert("Gagal");} }
         function logout() { localStorage.removeItem('pak_tani_user'); location.reload(); }
     </script>
