@@ -15,7 +15,7 @@
     <style>
         :root { --primary: #2E7D32; --bg: #F1F8E9; --white: #fff; --text: #333; }
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 50px; }
-        .navbar { background: var(--white); padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; }
+        .navbar { background: var(--white); padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
         .brand { font-weight: bold; color: var(--primary); font-size: 1.2rem; }
         .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
         .card { background: var(--white); border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
@@ -28,7 +28,7 @@
         img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
     </style>
 
-    <!-- SCRIPT INJEKSI VERCEL (PASTIKAN TIDAK ADA SPASI TAMBAHAN) -->
+    <!-- SCRIPT INJEKSI VERCEL -->
     <script>
         window.env = {
             SUPABASE_URL: "%VITE_SUPABASE_URL%",
@@ -48,31 +48,27 @@
 
     <!-- Content -->
     <div class="container">
-        <!-- Loading -->
         <div id="loading">Memuat Aplikasi...</div>
-
-        <!-- Welcome Text -->
         <div id="welcomeMsg" class="card hidden" style="text-align: center;">
             <h2 id="welcomeText"></h2>
         </div>
-
-        <!-- Product Grid -->
         <div id="products" class="grid hidden"></div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC (DIPERBAIKI KURUNG DAN TAG-NYA) -->
     <script>
-        // 1. SETUP KONEKSI SUPABASE DARI VERCEL
+        // 1. SETUP SUPABASE
         const supabaseUrl = window.env?.SUPABASE_URL;
         const supabaseKey = window.env?.SUPABASE_KEY;
 
-        // Cek Error Konfigurasi
         if (!supabaseUrl || !supabaseKey) {
             console.error("ERROR: API Key Vercel tidak terbaca.");
             alert("Error: API Key tidak terbaca. Pastikan sudah Redeploy di Vercel.");
-        } else {
-            // Inisialisasi Supabase
-            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        }
+
+        // Supabase instance global
+        let supabase = null;
+        if (supabaseUrl && supabaseKey) {
+            supabase = supabase.createClient(supabaseUrl, supabaseKey);
         }
 
         // 2. STATE
@@ -81,6 +77,10 @@
         // 3. LOAD PI SDK
         function loadPiSDK() {
             return new Promise((resolve) => {
+                if (window.Pi) {
+                    resolve();
+                    return;
+                }
                 const script = document.createElement('script');
                 script.src = "https://sdk.minepi.com/pi-sdk.js";
                 script.onload = () => {
@@ -91,7 +91,7 @@
             });
         }
 
-        // 4. FUNGSI UTAMA SAAT HALAMAN SIAP
+        // 4. PAGE READY
         document.addEventListener('DOMContentLoaded', async () => {
             await loadPiSDK();
 
@@ -104,14 +104,18 @@
                 updateUI(false);
             }
 
-            // Panggil fungsi ambil produk
             fetchProducts();
         });
 
-        // 5. FETCH PRODUK
+        // 5. FETCH PRODUCTS
         async function fetchProducts() {
             const container = document.getElementById('products');
             const loading = document.getElementById('loading');
+
+            if (!supabase) {
+                loading.innerText = "Supabase belum dikonfigurasi!";
+                return;
+            }
 
             try {
                 const { data, error } = await supabase
@@ -124,7 +128,7 @@
 
                 if (error) throw error;
 
-                if (data.length === 0) {
+                if (!data || data.length === 0) {
                     container.innerHTML = "<p>Belum ada produk.</p>";
                     return;
                 }
@@ -144,7 +148,7 @@
             }
         }
 
-        // 6. AUTH LOGIC
+        // 6. AUTH
         async function handleLogin() {
             try {
                 const authResult = await window.Pi.authenticate();
@@ -168,15 +172,16 @@
             const auth = document.getElementById('authSection');
             const welcome = document.getElementById('welcomeText');
             
-            if (isLoggedIn) {
-                auth.innerHTML = `<button class="btn" style="background:#555" onclick="handleLogout()">Logout</button>`;
-                welcome.innerHTML = `Halo, <b>${currentUser.username}</b>`;
+            if (isLoggedIn && currentUser) {
+                auth.innerHTML = <button class="btn" style="background:#555" onclick="handleLogout()">Logout</button>;
+                welcome.innerHTML = Halo, <b>${currentUser.username || currentUser.id}</b>;
                 document.getElementById('welcomeMsg').classList.remove('hidden');
             } else {
-                auth.innerHTML = `<button class="btn btn-pi" onclick="handleLogin()">Login Pi</button>`;
+                auth.innerHTML = <button class="btn btn-pi" onclick="handleLogin()">Login Pi</button>;
                 document.getElementById('welcomeMsg').classList.add('hidden');
             }
         }
     </script>
+
 </body>
-</html
+</html>
