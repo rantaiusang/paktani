@@ -10,7 +10,7 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Load Pi Network SDK -->
+    <!-- Load Pi Network SDK v2.0 -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     
     <style>
@@ -132,7 +132,7 @@
         .btn-pi:active { transform: translateY(0); }
         .btn-pi.disabled { background: #cbd5e1; cursor: not-allowed; transform: none; box-shadow: none; }
         
-        /* State Classes untuk JS */
+        /* State Classes */
         .btn-pi.loading { background: var(--pi-purple); cursor: wait; }
         .btn-pi.success { background: var(--success); cursor: default; }
         .btn-pi.error { background: var(--error); cursor: default; }
@@ -144,11 +144,11 @@
             border-radius: 50%;
             border-top-color: white;
             animation: spin 0.8s linear infinite;
-            display: none; /* Hidden by default */
+            display: none;
         }
         .btn-pi.loading .spinner { display: block; }
         .btn-pi.loading .btn-text { opacity: 0.8; }
-        .btn-pi.loading::before { display: none; } /* Hide shine effect saat loading */
+        .btn-pi.loading::before { display: none; }
 
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes pulse-green { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
@@ -159,6 +159,23 @@
             h1 { font-size: 1.5rem; }
         }
     </style>
+    
+    <!-- CONFIG SCRIPT (Hardcoded/Inline agar aman di Pi Browser tanpa module error) -->
+    <script>
+        // Kita definisikan config langsung di sini untuk login page agar lebih stabil
+        // Pastikan nilai ini sesuai dengan environment Anda
+        window.APP_CONFIG = {
+            IS_SANDBOX: true, // Ubah ke false jika Mainnet
+            SUPABASE_URL: "https://lrzaiftdikcjehtlbwlg.supabase.co",
+            SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpa2FwcXVodXNid2pjY2JxY3NiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNjQ1NTQsImV4cCI6MjA4NDc0MDU1NH0.X278oHDF0be7oa25484eliSukSYAYvDbJyU6ysz83zA",
+            PI: {
+                APP_ID: "26949299605f32"
+            }
+        };
+    </script>
+    
+    <!-- Supabase Client (UMUMNYA V2) -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -183,17 +200,13 @@
     </div>
 
     <!-- LOGIC -->
-    <script type="module">
-        import { supabase } from './js/supabase.js';
-        import { APP_CONFIG } from './js/pi-config.js'; // Import Config dari file JS terpisah
-
+    <script>
         const btnLogin = document.getElementById('btn-login');
         const btnText = document.querySelector('.btn-text');
         const spinner = document.querySelector('.spinner');
 
-        // Fungsi Helper untuk UI State
+        // Fungsi Helper UI
         function setButtonState(state) {
-            // Reset class
             btnLogin.className = 'btn-pi';
             
             if (state === 'loading') {
@@ -207,10 +220,11 @@
                 btnLogin.classList.add('error');
                 btnLogin.innerHTML = `<span class="btn-text"><i class="fas fa-times"></i> Coba Lagi</span>`;
                 spinner.style.display = 'none';
+                btnLogin.disabled = false;
             } else {
-                // Idle State (Default)
                 btnLogin.innerHTML = `<span class="btn-text"><i class="fab fa-pi"></i> Masuk dengan Pi Network</span><div class="spinner"></div>`;
                 spinner.style.display = 'none';
+                btnLogin.disabled = false;
             }
         }
 
@@ -219,90 +233,89 @@
             setButtonState('loading');
 
             try {
-                // 1. Ambil Konfigurasi dengan Aman
-                const appId = APP_CONFIG.APP.PI_APP_ID;
-                
-                if (!appId) {
-                    throw new Error("APP_ID tidak ditemukan di konfigurasi.");
-                }
-
-                // 2. Inisialisasi Pi Network
-                // Menggunakan pendekatan global PiNetwork (jika SDK Pi terbaru)
-                // atau Pi.init jika masih SDK lama.
-                const Pi = window.Pi || window.PiNetwork;
-                
+                // 1. Cek Ketersediaan SDK
+                const Pi = window.Pi;
                 if (!Pi) {
-                    throw new Error("Pi Network SDK tidak dimuat. Periksa koneksi internet atau script SDK.");
+                    throw new Error("Pi SDK tidak ditemukan. Harap buka di Pi Browser.");
                 }
 
-                Pi.init(appId);
+                // 2. Init SDK v2.0 (Format Object Config)
+                await Pi.init({ 
+                    version: "2.0", 
+                    sandbox: window.APP_CONFIG.IS_SANDBOX 
+                });
 
-                // 3. Lakukan Autentikasi
+                // 3. Authenticate
                 const authResult = await Pi.authenticate(['username', 'payments'], {
                     onIncompletePaymentFound: (payment) => {
-                        // Biarkan user menyelesaikan pembayaran jika ada
-                        // return Pi.createPayment(payment); 
-                        // Untuk demo ini kita abaikan agar user langsung masuk
+                        console.log("Incomplete payment found:", payment.identifier);
+                        // Logic handle incomplete bisa ditambahkan di sini
                     }
                 });
 
-                if (!authResult.user) {
-                    throw new Error("Autentikasi dibatalkan oleh pengguna.");
+                if (!authResult || !authResult.user) {
+                    throw new Error("Autentikasi dibatalkan.");
                 }
 
                 const piUser = authResult.user;
-                console.log("Pi User:", piUser);
+                console.log("Pi Auth Success:", piUser);
 
-                // 4. Cek Data Lokal & Sinkronisasi
-                // Mengambil user berdasarkan Pi Wallet Address (piUser.uid)
+                // 4. Inisialisasi Supabase Client
+                const supabase = window.supabase.createClient(
+                    window.APP_CONFIG.SUPABASE_URL,
+                    window.APP_CONFIG.SUPABASE_ANON_KEY
+                );
+
+                // 5. Cek & Sinkronisasi Database
                 const { data: dbUser, error } = await supabase
                     .from('users')
                     .select('*')
                     .eq('wallet_address', piUser.uid)
-                    .maybeSingle(); // maybeSingle() return obj atau null jika data tidak ditemukan
+                    .maybeSingle();
 
                 let finalUserId;
                 let isNewUser = false;
 
                 if (!dbUser) {
-                    // Jika user belum ada di DB kita, daftarkan
+                    // Registrasi User Baru
                     const { data: newUser, error: insertError } = await supabase
                         .from('users')
                         .insert([{
                             id: crypto.randomUUID(),
-                            username: piUser.username || 'Pioneer', // Gunakan username Pi, fallback ke 'Pioneer'
+                            username: piUser.username || 'Pioneer',
                             wallet_address: piUser.uid,
                             reputation: 100,
                             status: 'active'
-                        }]);
+                        }])
+                        .select();
 
                     if (insertError) throw insertError;
-                    finalUserId = newUser.id;
+                    // Supabase v2 insert return data di dalam array
+                    finalUserId = newUser[0].id;
                     isNewUser = true;
                 } else {
                     finalUserId = dbUser.id;
                 }
 
-                // 5. Simpan Sesi User
+                // 6. Simpan Session
                 const sessionData = {
-                    id: finalUserId,        // ID dari Supabase
-                    pi_uid: piUser.uid,    // ID dari Pi Network (Wallet Address)
+                    id: finalUserId,
+                    pi_uid: piUser.uid,
                     username: piUser.username || 'Pioneer',
                     accessToken: authResult.accessToken
                 };
-
                 localStorage.setItem('greenproof_user', JSON.stringify(sessionData));
 
-                // 6. UX Feedback Sukses
                 setButtonState('success');
                 
-                // Redirect ke Dashboard setelah jeda singkat
+                // Redirect
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 1200);
 
             } catch (error) {
                 console.error("Login Error:", error);
+                alert("Error: " + error.message); // Fallback alert
                 setButtonState('error');
             }
         });
