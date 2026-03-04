@@ -29,7 +29,7 @@ window.APP_CONFIG = {
     // 3. PI NETWORK CONFIGURATION
     // ==========================================
     PI: {
-        APP_ID: "26949299605f32",
+        APP_ID: "eec0b68d0ce431e5",
         SDK_VERSION: "2.0",
         SCOPES: ["username", "payments"]
     }
